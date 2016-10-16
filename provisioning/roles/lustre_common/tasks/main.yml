@@ -1,0 +1,19 @@
+- name: Disable SELinux
+  become: yes
+  lineinfile: dest=/etc/selinux/config regexp=^SELINUX= line=SELINUX=disabled
+
+- name: Enable ZoL repo
+  become: yes
+  yum: name="http://download.zfsonlinux.org/epel/zfs-release.el7.noarch.rpm" state=latest
+
+- name: Install Lustre repolist
+  become: yes
+  template: src=lustre.repo.j2 dest=/etc/yum.repos.d/lustre.repo mode=0644
+
+- name: Install e2fsprogs
+  become: yes
+  yum: name=e2fsprogs state=latest
+
+- name: Install lustre-tests
+  become: yes
+  yum: name=lustre-tests state=latest
