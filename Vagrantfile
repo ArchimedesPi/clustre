@@ -26,10 +26,12 @@ Vagrant.configure("2") do |config|
 	config.vm.provision :ansible do |ansible|
 		ansible.playbook = 'provisioning/playbook.yml'
 		ansible.groups = {
-			'lustre-management': ['lus-mg0-md0'],
-			'lustre-metadata': ['lus-mg0-md0'],
-			'lustre-objectstore': ['lus-oss0'],
-			'lustre-client': ['client0']
+			'lustre-management' => ['lus-mg0-md0'],
+			'lustre-metadata' => ['lus-mg0-md0'],
+			'lustre-objectstore' => ['lus-oss0'],
+
+			'lustre-client' => ['client0'],
+			'lustre-server:children' => ['lustre-management', 'lustre-metadata', 'lustre-objectstore']
 		}
 	end
 end
