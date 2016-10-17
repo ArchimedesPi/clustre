@@ -1,0 +1,73 @@
+# Obviously I could have used roles, which is the "proper" Ansible way to do this.
+# However, it's way easier to just splat all the tasks in one playbook, and I
+# don't currently feel like spending the additional work and maintaining something
+# with significant architectural overhead, when this is just a quick prototype.
+#
+# Obviously, this entire repo is nothing more than a quick sketch, and should *not*
+# be taken a a guideline for production deployment of Lustre.
+
+## ------ PHASE 1: INSTALL LUSTRE ------ ##
+- hosts: all
+  become: yes
+  vars:
+    lnet_iface: enp0s8
+  tasks:
+    - name: Disable SELinux
+      lineinfile: dest=/etc/selinux/config regexp=^SELINUX= line=SELINUX=disabled
+    
+    - name: Enable EPEL
+      yum: name=epel-release state=latest
+
+    - name: Enable ZoL repo
+      yum: name="http://download.zfsonlinux.org/epel/zfs-release.el7.noarch.rpm" state=present
+
+    - name: Install Lustre repolist
+      template: src=lustre.repo.j2 dest=/etc/yum.repos.d/lustre.repo mode=0644
+
+    - name: Install e2fsprogs
+      yum: name=e2fsprogs state=latest
+
+    - name: Install lustre packages # This will pull in the Lustre kernel
+      yum: name={{item}} state=latest
+      with_items:
+        - lustre
+        - lustre-tests
+        - lustre-osd-zfs
+
+    - name: Create lnet.conf
+      template: src=lnet.conf.j2 dest=/etc/modprobe.d/lnet.conf
+        mode=0644
+
+- hosts: lustre-server
+  become: yes
+  tasks:
+    - name: Remove the old Linux kernel
+      yum: name=kernel-3.10.0-327.el7.x86_64 state=latest
+    - name: Set up an lnet sysconfig module task
+      template: src=lnet.modules.j2 dest=/etc/sysconfig/modules/lnet.modules mode=0644
+
+- hosts: lustre-client
+  become: yes
+  tasks:
+    - name: Install lustre-client packages
+      yum: name={{item}} state=latest
+      with_items:
+        - lustre-client
+        - lustre-client-modules
+
+# -- Reboot everything --
+- hosts: all
+  gather_facts: false
+  become: yes
+  serial: 1
+  tasks:
+    - name: reboot | {{ inventory_hostname }} initated
+      shell: shutdown -r now "Ansible-triggered reboot"
+      async: 0
+      poll: 0
+      ignore_errors: true
+    # For various reasons, wait_for wasn't working. Just give each machine 10s to reboot :D
+    - name: reboot | {{ inventory_hostname }} sleeping during reboot
+      pause: seconds=10
+
+## ------ PHASE 2: PROVISION THE CLUSTER ------ ##
