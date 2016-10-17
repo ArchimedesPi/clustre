@@ -5,12 +5,6 @@ Vagrant.configure("2") do |config|
 	# turn off the default `. => /vagrant` share
 	config.vm.synced_folder ".", "/vagrant", disabled: true
 
-	# preliminary box setup. must run before we can provision the box with Ansible. 
-	config.vm.provision "shell", inline: <<-SHELL
-		sudo yum -y install epel-release
-		sudo yum -y install ansible
-	SHELL
-
 	# Lustre *combined* metadata and management server (MGS+MDS)
 	config.vm.define 'lus-mg-md0' do |mgmd0|
 		mgmd0.vm.box = LUSTRE_BOXEN
