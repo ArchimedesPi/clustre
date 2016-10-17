@@ -6,7 +6,7 @@ Vagrant.configure("2") do |config|
 	config.vm.synced_folder ".", "/vagrant", disabled: true
 
 	# Lustre *combined* metadata and management server (MGS+MDS)
-	config.vm.define 'lus-mg-md0' do |mgmd0|
+	config.vm.define 'lus-mg0-md0' do |mgmd0|
 		mgmd0.vm.box = LUSTRE_BOXEN
 		mgmd0.vm.network :private_network, ip: "192.168.143.2"
 	end
