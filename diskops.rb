@@ -11,7 +11,7 @@ def attach_disk(p, filename, options=nil)
 		'--type', options[:type], '--medium', filename]
 end
 
-# just creates the disk if it doesn't exist, mounts it otherwise.
+# Creates the disk if it doesn't exist, then mounts it.
 def provision_disk(p, filename, size, attach_options=nil)
 	unless File.exist?(filename)
 		create_disk(p, filename, size)
