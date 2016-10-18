@@ -1,3 +1,7 @@
+# Ignore MDT and OST vdisks
+disks/MDT*.vdi
+disks/OST*.vdi
+
 ### Vagrant ###
 .vagrant/
 
