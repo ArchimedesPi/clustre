@@ -38,7 +38,7 @@
       template: src=lnet.conf.j2 dest=/etc/modprobe.d/lnet.conf
         mode=0644
 
-- hosts: lustre-server
+- hosts: lustre-servers
   become: yes
   tasks:
     - name: Remove the old Linux kernel
@@ -46,7 +46,7 @@
     - name: Set up an lnet sysconfig module task
       template: src=lnet.modules.j2 dest=/etc/sysconfig/modules/lnet.modules mode=0644
 
-- hosts: lustre-client
+- hosts: lustre-clients
   become: yes
   tasks:
     - name: Install lustre-client packages

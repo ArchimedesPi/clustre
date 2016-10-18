@@ -42,8 +42,8 @@ Vagrant.configure("2") do |config|
 			'lustre-metadata' => ['lus-mg0-md0'],
 			'lustre-objectstore' => ['lus-oss0'],
 
-			'lustre-client' => ['client0'],
-			'lustre-server:children' => ['lustre-management', 'lustre-metadata', 'lustre-objectstore']
+			'lustre-clients' => ['client0'],
+			'lustre-servers:children' => ['lustre-management', 'lustre-metadata', 'lustre-objectstore']
 		}
 	end
 end
