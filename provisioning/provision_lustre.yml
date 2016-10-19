@@ -1,0 +1,11 @@
+
+## ------ PHASE 2: PROVISION THE CLUSTER ------ ##
+- hosts: lustre-servers
+  tasks:
+    - name: Create a lustre mdt on the vdev
+      debug: "mdt mkfs on {{inventory_hostname}}"
+      when: "'lustre-metadata' in group_names"
+    - name: Create a lustre mdt *and* mgt on the vdev
+      debug: "mdt + mgt mkfs on {{inventory_hostname}}"
+      when: "'lustre-metadata' in group_names and \
+        'lustre-management' in group_names"

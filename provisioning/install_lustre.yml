@@ -5,8 +5,11 @@
 #
 # Obviously, this entire repo is nothing more than a quick sketch, and should *not*
 # be taken a a guideline for production deployment of Lustre.
+#
+# Lustre installation/provisioning is split into two playbooks, since you can't just
+# restart a Vagrant machine with `reboot` - Vagrant needs to rewire the VM's network
+# interfaces and other peripherals at boot time.
 
-## ------ PHASE 1: INSTALL LUSTRE ------ ##
 - hosts: all
   become: yes
   vars:
@@ -69,5 +72,3 @@
     # For various reasons, wait_for wasn't working. Just give each machine 10s to reboot :D
     - name: reboot | {{ inventory_hostname }} sleeping during reboot
       pause: seconds=10
-
-## ------ PHASE 2: PROVISION THE CLUSTER ------ ##
