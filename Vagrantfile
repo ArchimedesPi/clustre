@@ -44,8 +44,18 @@ Vagrant.configure("2") do |config|
 		cl0.vm.network :private_network, type: :dhcp
 	end
 
+	# Install Lustre to all cluster nodes
 	config.vm.provision :ansible do |ansible|
-		ansible.playbook = 'provisioning/playbook.yml'
+		ansible.playbook = 'provisioning/install_lustre.yml'
+		ansible.groups = BOX_GROUPING
+	end
+
+	# Reboot all nodes
+	config.vm.provision :reload
+
+	# Provision the Lustre filesystem
+	config.vm.provision :ansible do |ansible|
+		ansible.playbook = 'provisioning/provision_lustre.yml'
 		ansible.groups = BOX_GROUPING
 	end
 end
