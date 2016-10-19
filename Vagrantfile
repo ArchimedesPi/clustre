@@ -4,6 +4,15 @@ CLIENT_BOXEN = 'bento/centos-7.2'
 OST_DISKS = ['./disks/OST0.vdi']
 MDT_DISKS = ['./disks/MDT0.vdi']
 
+BOX_GROUPING = {
+	'lustre-management' => ['lus-mg0-md0'],
+	'lustre-metadata' => ['lus-mg0-md0'],
+	'lustre-objectstore' => ['lus-oss0'],
+
+	'lustre-clients' => ['client0'],
+	'lustre-servers:children' => ['lustre-management', 'lustre-metadata', 'lustre-objectstore']
+}
+
 # Provides custom disk operation utils for the Virtualbox provider
 require './diskops'
 
@@ -37,13 +46,6 @@ Vagrant.configure("2") do |config|
 
 	config.vm.provision :ansible do |ansible|
 		ansible.playbook = 'provisioning/playbook.yml'
-		ansible.groups = {
-			'lustre-management' => ['lus-mg0-md0'],
-			'lustre-metadata' => ['lus-mg0-md0'],
-			'lustre-objectstore' => ['lus-oss0'],
-
-			'lustre-clients' => ['client0'],
-			'lustre-servers:children' => ['lustre-management', 'lustre-metadata', 'lustre-objectstore']
-		}
+		ansible.groups = BOX_GROUPING
 	end
 end
